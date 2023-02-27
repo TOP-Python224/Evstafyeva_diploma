@@ -1,0 +1,50 @@
+@startuml
+
+!theme monokai from ..\data
+hide class empty members
+
+
+class UserData {
+    {field}<&key> <b>id</b>: integer unsigned
+    {field}<b>full_name</b>: varchar(50)
+    {field}<b>age</b>: tinyint unsigned
+    {field}<b>sex</b>: enum('M', 'F')
+    {field}<b>weight</b>: decimal(4,1)
+    {field}<b>height</b>: tinyint unsigned
+}
+
+
+class Product {
+    {field}<&key> <b>id</b>: integer unsigned
+    {field}<b>name</b>: varchar(30)
+    {field}<b>calories_low_limit</b>: smallint unsigned
+    {field}<b>calories_high_limit</b>: smallint unsigned
+    {field}<b>proteins</b>: smallint unsigned
+    {field}<b>fats</b>: smallint unsigned
+    {field}<b>carbohydrates</b>: smallint unsigned
+}
+
+
+hide users_products circle
+class users_products {
+    {field}<&key> <b>user_id</b>: integer unsigned
+    {field}<&key> <b>product_id</b>: integer unsigned
+}
+
+
+'от порядка расположения объектов в связи и самих связей зависит и порядок расположения объектов на диаграмме
+
+'по вертикали
+UserData "id" <--- "user_id" users_products
+users_products "product_id" ---> "id" Product
+
+'users_products внизу
+'UserData "id" <--- "user_id" users_products
+'Product "id" <--- "product_id" users_products
+
+'по горизонтали
+'UserData "id" <-left- "user_id" users_products
+'users_products "product_id" -left-> "id" Product
+
+
+@enduml
