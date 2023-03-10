@@ -11,6 +11,9 @@ class UserData {
     {field}<b>sex</b>: enum('M', 'F')
     {field}<b>weight</b>: decimal(4,1)
     {field}<b>height</b>: tinyint unsigned
+    {field}<b>purpose</b>: enum('Похудение', 'Набор мышечной массы', 'Поддержание веса')
+    {field}<b>activity_level</b>: enum('Низкий', 'Умеренный', 'Высокий', 'Интенсивный')
+    {field}<b>body_mass_index</b>: tinyint unsigned
 }
 
 
@@ -27,24 +30,102 @@ class Product {
 
 hide users_products circle
 class users_products {
-    {field}<&key> <b>user_id</b>: integer unsigned
+    {field}<&key> <b>user_data_id</b>: integer unsigned
     {field}<&key> <b>product_id</b>: integer unsigned
+}
+
+
+class User {
+    {field}<&key> <b>id</b>: integer unsigned
+    {field}<b>username</b>: varchar(100)
+    {field}<b>password</b>: varchar(50)
+}
+
+
+class Water{
+    {field}<&key> <b>id</b>: integer unsigned
+    {field}<b>water_volume</b>: decimal(2,1)
+}
+
+hide users_water circle
+class users_water {
+    {field}<&key> <b>user_data_id</b>: integer unsigned
+    {field}<&key> <b>water_id</b>: integer unsigned
+}
+
+class Activity {
+    {field}<&key> <b>id</b>: integer unsigned
+    {field}<b>name</b>: varchar(30)
+    {field}<b>runtime</b>: tinyint unsigned
+    {field}<b>burned_calories</b>: smallint unsigned
+}
+
+hide users_activity circle
+class users_activity {
+    {field}<&key> <b>user_data_id</b>: integer unsigned
+    {field}<&key> <b>activity_id</b>: integer unsigned
+}
+
+class Reports {
+    {field}<&key> <b>id</b>: integer unsigned
+    {field}<b>report_day</b>: date
+    {field}<b>day_calories</b>: smallint unsigned
+    {field}<b>day_proteins</b>: smallint unsigned
+    {field}<b>day_fats</b>: smallint unsigned
+    {field}<b>day_carbohydrates</b>: smallint unsigned
+    {field}<b>day_water</b>: decimal(2,1)
+    {field}<b>day_activity</b>: smallint unsigned
+}
+
+hide user_reports circle
+class user_reports {
+    {field}<&key> <b>user_id</b>: integer unsigned
+    {field}<&key> <b>reports_id</b>: integer unsigned
+}
+
+class WeightChange{
+    {field}<&key> <b>id</b>: integer unsigned
+    {field}<b>weight_day</b>: date
+    {field}<b>new_weight</b>: decimal(4,1)
+}
+
+hide user_weight_change circle
+class user_weight_change {
+    {field}<&key> <b>user_id</b>: integer unsigned
+    {field}<&key> <b>weight_change_id</b>: integer unsigned
 }
 
 
 'от порядка расположения объектов в связи и самих связей зависит и порядок расположения объектов на диаграмме
 
 'по вертикали
-UserData "id" <--- "user_id" users_products
+UserData "id" <--- "user_data_id" users_products
 users_products "product_id" ---> "id" Product
 
+User "id" -left-> "id" UserData
+User "id" ---> "id" Reports
+user_reports "reports_id" <--- "id" User
+user_reports "reports_id" ---> "id" Reports
+
+UserData "id" <--- "user_data_id" users_water
+Water "id" <--- "water_id" users_water
+
+UserData "id" <--- "user_data_id" users_activity
+Activity "id" <--- "activity_id" users_activity
+
+
+WeightChange "id" ---> "id" Reports
+
+user_weight_change "weight_change_id" ---> "id" UserData
+user_weight_change "weight_change_id" ---> "id" WeightChange
+
 'users_products внизу
-'UserData "id" <--- "user_id" users_products
+'UserData "id" <--- "user_data_id" users_products
 'Product "id" <--- "product_id" users_products
 
 'по горизонтали
-'UserData "id" <-left- "user_id" users_products
+'UserData "id" <-left- "user_data_id" users_products
 'users_products "product_id" -left-> "id" Product
 
 
-@enduml
+@endumlcg
