@@ -134,6 +134,7 @@ hide user_weight_change circle
 Activity "1" -- "*" users_activity
 users_activity "*" -left- "1" UserData
 
+'ОТВЕТИТЬ: так каким должен быть тип связи между User и Reports? один-к-одному, один-ко-многим или многие-ко-многим? выглядит так, будто вы перепробовали все, но так и не определились
 User "1" -right- "1" UserData
 User "1" -- "*" user_reports
 user_reports "*" -- "1" Reports
