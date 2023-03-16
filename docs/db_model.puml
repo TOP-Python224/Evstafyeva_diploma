@@ -66,13 +66,32 @@ class Activity {
 
 
 'подписи: кратность связей
-User "1" -- "1" UserData
+User "1" --- "1" UserData
 
 UserData "1" -left- "*" WeightChange
 UserData "1" -right- "*" Reports
 
-Reports "*" --- "1" Product
+Reports "*" --- "1" Product : " "
+note right on link
+    <b>Reports</b> и <b>Product</b>, а также
+    <b>Reports</b> и <b>Activity</b> связаны
+    как <u>один-ко-многим</u>
+end note
 Reports "*" --- "1" Activity
+
+
+note "<b>UserData</b> и <b>Product</b> связаны как <u>многие-ко-многим</u>" as n3
+
+note "<b>UserData</b> и <b>Activity</b> связаны как <u>многие-ко-многим</u>" as n4
+
+note "<b>Reports</b> выступает в качестве вспомогательной \nтаблицы для связей <u>многие-ко-многим</u>, но помимо \nэтого содержит и другие поля" as n5
+
+
+UserData .. n3
+n3 .. Product
+
+Activity .. n4
+n5 .. Reports
 
 
 @enduml
