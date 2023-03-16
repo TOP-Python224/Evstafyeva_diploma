@@ -4,6 +4,12 @@
 hide class empty members
 
 
+legend top left
+    purposes = ('Похудение', 'Набор мышечной массы', 'Поддержание веса')
+    levels = ('Низкий', 'Умеренный', 'Высокий', 'Интенсивный')
+end legend
+
+
 class UserData {
     {field}<&key> <b>id</b>: integer unsigned
     {field}<b>full_name</b>: varchar(50)
@@ -11,8 +17,8 @@ class UserData {
     {field}<b>sex</b>: enum('M', 'F')
     {field}<b>weight</b>: decimal(4,1)
     {field}<b>height</b>: tinyint unsigned
-    {field}<b>purpose</b>: enum('Похудение', 'Набор мышечной массы', 'Поддержание веса')
-    {field}<b>activity_level</b>: enum('Низкий', 'Умеренный', 'Высокий', 'Интенсивный')
+    {field}<b>purpose</b>: enum(<i>purposes</i>)
+    {field}<b>activity_level</b>: enum(<i>levels</i>)
     {field}<b>body_mass_index</b>: tinyint unsigned
 }
 
@@ -28,11 +34,11 @@ class Product {
 }
 
 
-hide users_products circle
 class users_products {
     {field}<&key> <b>user_data_id</b>: integer unsigned
     {field}<&key> <b>product_id</b>: integer unsigned
 }
+hide users_products circle
 
 
 class User {
@@ -47,11 +53,13 @@ class Water{
     {field}<b>water_volume</b>: decimal(2,1)
 }
 
-hide users_water circle
+
 class users_water {
     {field}<&key> <b>user_data_id</b>: integer unsigned
     {field}<&key> <b>water_id</b>: integer unsigned
 }
+hide users_water circle
+
 
 class Activity {
     {field}<&key> <b>id</b>: integer unsigned
@@ -60,11 +68,13 @@ class Activity {
     {field}<b>burned_calories</b>: smallint unsigned
 }
 
-hide users_activity circle
+
 class users_activity {
     {field}<&key> <b>user_data_id</b>: integer unsigned
     {field}<&key> <b>activity_id</b>: integer unsigned
 }
+hide users_activity circle
+
 
 class Reports {
     {field}<&key> <b>id</b>: integer unsigned
@@ -77,11 +87,13 @@ class Reports {
     {field}<b>day_activity</b>: smallint unsigned
 }
 
-hide user_reports circle
+
 class user_reports {
     {field}<&key> <b>user_id</b>: integer unsigned
     {field}<&key> <b>reports_id</b>: integer unsigned
 }
+hide user_reports circle
+
 
 class WeightChange{
     {field}<&key> <b>id</b>: integer unsigned
@@ -89,43 +101,55 @@ class WeightChange{
     {field}<b>new_weight</b>: decimal(4,1)
 }
 
-hide user_weight_change circle
+
 class user_weight_change {
     {field}<&key> <b>user_id</b>: integer unsigned
     {field}<&key> <b>weight_change_id</b>: integer unsigned
 }
+hide user_weight_change circle
 
 
 'от порядка расположения объектов в связи и самих связей зависит и порядок расположения объектов на диаграмме
 
-'по вертикали
-UserData "id" <--- "user_data_id" users_products
-users_products "product_id" ---> "id" Product
-
-User "id" -left-> "id" UserData
-User "id" ---> "id" Reports
-user_reports "reports_id" <--- "id" User
-user_reports "reports_id" ---> "id" Reports
-
-UserData "id" <--- "user_data_id" users_water
-Water "id" <--- "water_id" users_water
-
-UserData "id" <--- "user_data_id" users_activity
-Activity "id" <--- "activity_id" users_activity
-
-
-WeightChange "id" ---> "id" Reports
-
-user_weight_change "weight_change_id" ---> "id" UserData
-user_weight_change "weight_change_id" ---> "id" WeightChange
-
-'users_products внизу
-'UserData "id" <--- "user_data_id" users_products
-'Product "id" <--- "product_id" users_products
-
-'по горизонтали
-'UserData "id" <-left- "user_data_id" users_products
-'users_products "product_id" -left-> "id" Product
+'подписи: связанные поля
+'Activity "id" -- "activity_id" users_activity
+'users_activity "user_data_id" --left-- "id" UserData
+'
+'User "id" -right- "id" UserData
+'User "id" -- "reports_id" user_reports
+'WeightChange "id" -- "id" Reports
+'user_reports "reports_id" -- "id" Reports
+'
+'UserData "id" -- "weight_change_id" user_weight_change
+'user_weight_change "weight_change_id" -- "id" WeightChange
+'
+'UserData "id" --- "user_data_id" users_products
+'users_products "product_id" -- "id" Product
+'
+'UserData "id" --- "user_data_id" users_water
+'users_water "water_id" -- "id" Water
 
 
-@endumlcg
+'подписи: кратность связей
+Activity "1" -- "*" users_activity
+users_activity "*" -left- "1" UserData
+
+User "1" -right- "1" UserData
+User "1" -- "*" user_reports
+user_reports "*" -- "1" Reports
+'User "id" ---> "id" Reports
+
+UserData "1" -- "*" user_weight_change
+user_weight_change "*" -- "1" WeightChange
+
+WeightChange "1" -- "1" Reports
+
+UserData "1" --- "*" users_products
+users_products "*" -- "1" Product
+
+UserData "1" --- "*" users_water
+users_water "*" -- "1" Water
+
+
+
+@enduml

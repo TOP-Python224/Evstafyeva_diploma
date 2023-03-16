@@ -9,6 +9,10 @@
 !$FONT_NAME = "Space Mono"
 !endif
 
+!if (%not(%variable_exists("$FONT_NAME_NARROW")))
+!$FONT_NAME_NARROW = "Monitorica-Italic"
+!endif
+
 !if (%not(%variable_exists("$FONT_NAME_CYRILLIC")))
 !$FONT_NAME_CYRILLIC = "Noto Sans"
 !endif
@@ -16,6 +20,7 @@
 !if (%not(%variable_exists("$FONT_SIZE")))
 !$FONT_SIZE = 15
 !$FONT_SIZE_SMALLER = 13
+!$FONT_SIZE_LARGER = 17
 !endif
 
 !$ACCENT = "ff6078"
@@ -87,7 +92,15 @@ skinparam backgroundColor 2d2a2e
   arrowFontName $FONT_NAME
   arrowFontColor $ARROW_FONT
   arrowFontSize $FONT_SIZE
+  arrowFontStyle Bold
 !endprocedure
+
+skinparam legend {
+  heavy_style()
+  fontColor $PRIMARY_FONT
+  fontName $FONT_NAME_NARROW
+  fontSize $FONT_SIZE_LARGER
+}
 
 ' Class diagrams
 
