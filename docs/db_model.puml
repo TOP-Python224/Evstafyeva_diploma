@@ -15,19 +15,19 @@ class UserData {
     {field}<b>full_name</b>: varchar(50)
     {field}<b>age</b>: tinyint unsigned
     {field}<b>sex</b>: enum('M', 'F')
-    {field}<b>weight</b>: decimal(4,1)
+'    {field}<b>weight</b>: decimal(4,1)
     {field}<b>height</b>: tinyint unsigned
     {field}<b>purpose</b>: enum(<i>purposes</i>)
     {field}<b>activity_level</b>: enum(<i>levels</i>)
-    {field}<b>body_mass_index</b>: tinyint unsigned
+'    сделать свойством класса, возвращающим строку с интерпретацией
+'    {field}<b>body_mass_index</b>: tinyint unsigned
 }
 
 
 class Product {
     {field}<&key> <b>id</b>: integer unsigned
     {field}<b>name</b>: varchar(30)
-    {field}<b>calories_low_limit</b>: smallint unsigned
-    {field}<b>calories_high_limit</b>: smallint unsigned
+    {field}<b>calories</b>: smallint unsigned
     {field}<b>proteins</b>: smallint unsigned
     {field}<b>fats</b>: smallint unsigned
     {field}<b>carbohydrates</b>: smallint unsigned
@@ -97,8 +97,8 @@ hide user_reports circle
 
 class WeightChange{
     {field}<&key> <b>id</b>: integer unsigned
-    {field}<b>weight_day</b>: date
-    {field}<b>new_weight</b>: decimal(4,1)
+    {field}<b>day</b>: date
+    {field}<b>weight</b>: decimal(4,1)
 }
 
 
@@ -132,9 +132,10 @@ hide user_weight_change circle
 
 'подписи: кратность связей
 Activity "1" -- "*" users_activity
-users_activity "*" -left- "1" UserData
+users_activity "*" -left- "1" Reports
 
 'ОТВЕТИТЬ: так каким должен быть тип связи между User и Reports? один-к-одному, один-ко-многим или многие-ко-многим? выглядит так, будто вы перепробовали все, но так и не определились
+'ОТВЕТ: один-ко-многим (один пользователь - калории, БЖУ, вода, активность))
 User "1" -right- "1" UserData
 User "1" -- "*" user_reports
 user_reports "*" -- "1" Reports
@@ -143,12 +144,13 @@ user_reports "*" -- "1" Reports
 UserData "1" -- "*" user_weight_change
 user_weight_change "*" -- "1" WeightChange
 
-WeightChange "1" -- "1" Reports
+'отчеты и график изменения веса независимы
+'WeightChange "1" -- "1" Reports
 
-UserData "1" --- "*" users_products
+Reports "1" --- "*" users_products
 users_products "*" -- "1" Product
 
-UserData "1" --- "*" users_water
+Reports "1" --- "*" users_water
 users_water "*" -- "1" Water
 
 
