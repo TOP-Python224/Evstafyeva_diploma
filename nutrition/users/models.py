@@ -1,20 +1,28 @@
+from collections.abc import Iterable
 from django.db import models
 from enum import Enum
 from django.contrib.auth.models import User
 
 
-class Sex(Enum):
+# ИСПОЛЬЗОВАТЬ: класс-примесь для перечислителей
+class EnumItems:
+    @classmethod
+    def items(cls: Iterable):
+        return [(item.name, item.value) for item in cls]
+
+
+class Sex(EnumItems, Enum):
     MALE = 'Мужской'
     FEMALE = 'Женский'
 
 
-class Purpose(Enum):
+class Purpose(EnumItems, Enum):
     LOSS = 'Похудение'
     INCREASE = 'Набор веса'
     MAINTENANCE = 'Поддержание веса'
 
 
-class ActivityLevel(Enum):
+class ActivityLevel(EnumItems, Enum):
     LOW = 'Низкий'
     MIDDLE = 'Умеренный'
     HIGH = 'Высокий'
@@ -47,15 +55,16 @@ class UserData(models.Model):
     height = models.IntegerField()
     sex = models.CharField(
         max_length=2,
-        choices=[(tag, tag.value) for tag in Sex]
+        # ИСПОЛЬЗОВАТЬ: теперь интересующее вас поведение перечислителей определяется не дублирующимся кодом в определении модели, а одним методом, который намного проще модифицировать при необходимости
+        choices=Sex.items()
     )
     purpose = models.CharField(
         max_length=2,
-        choices=[(tag, tag.value) for tag in Purpose]
+        choices=Purpose.items()
     )
     activity_level = models.CharField(
         max_length=2,
-        choices=[(tag, tag.value) for tag in ActivityLevel]
+        choices=ActivityLevel.items()
     )
     user = models.OneToOneField(User, models.CASCADE)
     product = models.ManyToManyField(
