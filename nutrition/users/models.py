@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 class EnumItems:
     @classmethod
     def items(cls: Iterable):
+        # КОММЕНТАРИЙ: первый элемент кортежа должен быть собственно тем значением поля, которое будет проверяться — лучше явно указать атрибут name (строку) экземпляра перечислителя, а не сам экземпляр перечислителя
         return [(item.name, item.value) for item in cls]
 
 
@@ -43,6 +44,7 @@ class Product(models.Model):
 class Activity(models.Model):
     activity_name = models.CharField(max_length=50)
     burned_calories = models.IntegerField()
+    # КОММЕНТАРИЙ: не лучше ли здесь использовать models.TimeField?
     runtime = models.IntegerField()
 
     def __str__(self):
@@ -54,6 +56,7 @@ class UserData(models.Model):
     age = models.IntegerField()
     height = models.IntegerField()
     sex = models.CharField(
+        # ИСПРАВИТЬ здесь и далее: в это поле должен быть записан первый элемент какого-то из кортежей внутри choices — а их длина больше двух символов
         max_length=2,
         # ИСПОЛЬЗОВАТЬ: теперь интересующее вас поведение перечислителей определяется не дублирующимся кодом в определении модели, а одним методом, который намного проще модифицировать при необходимости
         choices=Sex.items()
@@ -85,8 +88,11 @@ class WeightChange(models.Model):
     weight = models.DecimalField(
         max_digits=4,
         decimal_places=1,
+        # КОММЕНТАРИЙ: если я правильно понимаю, то экземпляр этой модели (и запись в таблице) будет создаваться каждый раз, когда пользователь в отдельной от общего отчёта формочке введёт свой новый вес
+        # УДАЛИТЬ: если так, то зачем здесь значение по умолчанию? не вижу смысла хранить в таблице нулевые значения
         default=0
     )
+    # КОММЕНТАРИЙ: не забудьте, что значение для этого поля должно не вводиться пользователем, а рассчитываться (в представлении или форме) на основании нового веса и роста конкретного пользователя
     bmi = models.DecimalField(
         max_digits=3,
         decimal_places=1,
